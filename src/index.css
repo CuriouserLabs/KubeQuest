@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+/* Class-based dark mode: the `dark` class is toggled on <html>. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-display: "Baloo 2", "Trebuchet MS", ui-rounded, sans-serif;
+  --font-body: "Nunito", ui-sans-serif, system-ui, sans-serif;
+
+  /* Kubernetes blue (#326ce5) as the anchor of the palette. */
+  --color-kube-50: #eef4ff;
+  --color-kube-100: #d9e6ff;
+  --color-kube-200: #bcd3ff;
+  --color-kube-300: #8eb6fe;
+  --color-kube-400: #598ffa;
+  --color-kube-500: #3a70f2;
+  --color-kube-600: #326ce5;
+  --color-kube-700: #2456c7;
+  --color-kube-800: #2347a0;
+  --color-kube-900: #21407f;
+  --color-kube-950: #16274e;
+
+  /* Chunky offset "comic" shadows. */
+  --shadow-cartoon: 6px 6px 0 0 rgb(22 39 78 / 0.85);
+  --shadow-cartoon-sm: 3px 3px 0 0 rgb(22 39 78 / 0.85);
+  --shadow-cartoon-dark: 6px 6px 0 0 rgb(0 0 0 / 0.55);
+  --shadow-cartoon-sm-dark: 3px 3px 0 0 rgb(0 0 0 / 0.55);
+
+  --animate-float: float 7s ease-in-out infinite;
+  --animate-float-slow: float 12s ease-in-out infinite;
+  --animate-spin-slow: spin-slow 28s linear infinite;
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-14px);
+    }
+  }
+
+  @keyframes spin-slow {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+}
+
+body {
+  font-family: var(--font-body);
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-kube-400);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+@layer components {
+  .cartoon-card {
+    @apply rounded-3xl border-[3px] border-kube-950/90 bg-white shadow-cartoon dark:border-slate-300/25 dark:bg-slate-900 dark:shadow-cartoon-dark;
+  }
+
+  .cartoon-btn {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-2xl border-[3px] border-kube-950/90 font-display font-bold shadow-cartoon-sm transition-transform hover:-translate-y-0.5 active:translate-y-0.5 active:shadow-none disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-300/25 dark:shadow-cartoon-sm-dark;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border-2 border-kube-950/80 px-3 py-1 text-xs font-bold dark:border-slate-300/25;
+  }
+}

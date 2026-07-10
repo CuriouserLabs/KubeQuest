@@ -1,0 +1,33 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Each user may read and write ONLY their own progress document.
+    // Nobody can list or read anyone else's progress.
+    match /users/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // Anonymous aggregate counter: "N people are studying this plan".
+    // - Anyone (including signed-out visitors) can read the count.
+    // - A signed-in user may only ever increment it by exactly 1
+    //   (done once, when their user document is first created).
+    // - No individual data is ever stored here.
+    match /stats/global {
+      allow read: if true;
+      allow create: if request.auth != null
+        && request.resource.data.keys().hasOnly(['studiers'])
+        && request.resource.data.studiers == 1;
+      allow update: if request.auth != null
+        && request.resource.data.keys().hasOnly(['studiers'])
+        && request.resource.data.studiers == resource.data.studiers + 1;
+      allow delete: if false;
+    }
+
+    // Deny everything else.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

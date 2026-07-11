@@ -845,7 +845,7 @@ export const WEEKS: Week[] = [
         id: "w7-sim",
         title: "Simulate the real thing",
         hints: [
-          "Your exam registration ($445) includes two Killer.sh simulator sessions and one free retake — the simulator sessions are for weeks 7 and 8.",
+          "Your exam registration includes two Killer.sh simulator sessions and one free retake — the simulator sessions are for weeks 7 and 8.",
         ],
         subSteps: [
           {
@@ -1092,7 +1092,7 @@ export const EXAM_FACTS: { emoji: string; text: string }[] = [
   { emoji: "⏱️", text: "2 hours, ~15–20 live tasks" },
   { emoji: "🎯", text: "66% to pass, partial credit" },
   { emoji: "📖", text: "Open book: kubernetes.io docs" },
-  { emoji: "💵", text: "$445 incl. retake + 2× Killer.sh" },
+  { emoji: "🔁", text: "Free retake + 2× Killer.sh" },
   { emoji: "🔄", text: "Tracks current k8s (~v1.35)" },
   { emoji: "🏅", text: "Valid 2 years" },
 ];

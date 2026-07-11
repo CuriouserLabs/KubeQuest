@@ -20,7 +20,7 @@ week boundaries matter less than finishing every hands-on checkpoint.
   API docs, in one extra browser tab. Practising fast doc navigation is a real skill.
 - Version: tracks the current Kubernetes release (around v1.35 as of now, updated
   quarterly). Study the current version, not older tutorials.
-- Cost: 445 USD, includes one free retake and two Killer.sh simulator sessions.
+- Registration includes one free retake and two Killer.sh simulator sessions.
 - Validity: 2 years.
 
 ### Domain weights (build your time around these)

@@ -1415,7 +1415,7 @@ export const VALIDATIONS: StepValidation[] = [
       },
       {
         id: "q-w8-book-retake",
-        prompt: "What safety net does the $445 registration include?",
+        prompt: "What safety net does the exam registration include?",
         choices: [
           "A refund if you fail",
           "One free retake and two Killer.sh sessions",

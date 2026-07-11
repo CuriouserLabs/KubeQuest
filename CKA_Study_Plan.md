@@ -1,8 +1,9 @@
 # CKA Study Plan (Certified Kubernetes Administrator)
 
-A realistic, part-time plan tailored to a working backend engineer who already has
-strong Linux, Docker, YAML, and cloud fundamentals, but limited hands-on Kubernetes
-cluster administration.
+A realistic, part-time plan for busy engineers. It is built around the most common
+starting point: some Linux, Docker, YAML, and cloud fundamentals, but limited
+hands-on Kubernetes cluster administration. If your background differs, shift time
+between the "lean on" and "grind" lists below — the structure still holds.
 
 Target pace: about 6 to 8 hours per week over 8 weeks (roughly 50 to 60 hours total).
 Go harder and you can compress to 6 weeks; spread thinner and extend to 10. The
@@ -36,13 +37,17 @@ week boundaries matter less than finishing every hands-on checkpoint.
 
 ## What to lean on vs what to grind
 
-Lean on (you already have these, do not over-study):
+Lean on what you already know — if you have strong skills in any of these, do not
+over-study them; focus on what is Kubernetes-specific:
 - Linux CLI, file editing, systemctl, journald, process and log inspection.
 - Docker and container concepts.
 - YAML authoring and reading.
 - General cloud and networking intuition.
 
-Grind these (your real gaps):
+If any of these are shaky, brush up just enough as you go rather than studying them
+up front — the exam tests them only through Kubernetes tasks.
+
+Grind these (the real gaps for most first-time cluster administrators):
 - Bootstrapping and upgrading a cluster with kubeadm.
 - etcd backup and restore. This is a classic, high-value exam task.
 - Node troubleshooting (NotReady nodes, kubelet issues, static pods).

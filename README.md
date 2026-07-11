@@ -92,6 +92,14 @@ app still runs in read-only mode, which is handy for UI work.
 > **Note:** for Google sign-in to work locally, `localhost` must be in
 > Authentication → Settings → Authorized domains (it is by default).
 
+> **Production config:** the live project's Firebase **web** config is
+> committed in `.env.production` and picked up automatically by
+> `npm run build`, so deploys work without any local setup. Those values are
+> public by design (they ship in the client bundle) — **not** secrets. A
+> local `.env` (gitignored) still overrides them for development. The Admin
+> SDK service-account key is a separate, real secret and must never be
+> committed (see `serviceAccountKey.example.json`).
+
 ### 3. Deploy to Firebase Hosting
 
 ```bash

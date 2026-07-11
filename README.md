@@ -13,6 +13,11 @@ all plan content).
   Cluster Architecture 25%, Networking 20%, Workloads 15%, Storage 10%).
 - 🚦 A readiness bar that lights up automatically as you complete the relevant
   work — a clear "am I ready to book the exam?" signal.
+- 🧪 A **Skill Check** tab: per-step multiple-choice quizzes plus command
+  drills verified locally with regex patterns (no cluster or backend needed),
+  so students can validate their knowledge before ticking a step off. The UI
+  nudges this via the step hints and a pop-up when completing a step. Results
+  are deliberately not persisted and not linked to progress tracking.
 - 🗓️ Optional target exam date with countdown and pace indicator.
 - 🔐 Google sign-in; progress syncs across devices via Firestore. Signed-out
   visitors can browse the whole plan read-only.
@@ -119,8 +124,10 @@ Authentication → Settings → Authorized domains if it isn't already.
 ```
 src/
   data/plan.ts          # the study plan as typed static data (source of truth)
+  data/validation.ts    # per-step skill checks: MCQs + regex-verified drills
   types.ts              # shared types (plan structure, Firestore user doc)
   utils/progress.ts     # derived progress: per-week/domain %, readiness, pace
+  utils/routing.ts      # tiny hash router (#/ plan, #/skill-check)
   lib/firebase.ts       # Firebase init from env vars (optional at dev time)
   context/AuthContext.tsx
   hooks/useProgress.ts  # users/{uid} sync with optimistic checkbox writes

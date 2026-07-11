@@ -1,9 +1,10 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Header } from "./components/Header";
 import { KubeBackground } from "./components/KubeBackground";
 import { ProgressOverview } from "./components/ProgressOverview";
 import { ExamDateCard } from "./components/ExamDateCard";
 import { ReadinessCard } from "./components/ReadinessCard";
+import { SkillCheck } from "./components/SkillCheck";
 import { WeekCard } from "./components/WeekCard";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { EXAM_FACTS, RESOURCES, WEEKS } from "./data/plan";
@@ -11,6 +12,7 @@ import { useProgress } from "./hooks/useProgress";
 import { useStudierCount } from "./hooks/useStudierCount";
 import { useTheme } from "./hooks/useTheme";
 import { completedSetFromMap, firstUnfinishedWeekId } from "./utils/progress";
+import { navigateTo, parseHash, type AppRoute } from "./utils/routing";
 
 export default function App() {
   return (
@@ -26,6 +28,19 @@ function AppShell() {
   const progress = useProgress(user);
   const studierCount = useStudierCount();
 
+  const [route, setRoute] = useState<AppRoute>(() =>
+    parseHash(window.location.hash),
+  );
+  useEffect(() => {
+    const onHashChange = () => setRoute(parseHash(window.location.hash));
+    window.addEventListener("hashchange", onHashChange);
+    return () => window.removeEventListener("hashchange", onHashChange);
+  }, []);
+  useEffect(() => {
+    // Fresh view: start at the top unless a skill check asked to be focused.
+    if (!route.focusStepId) window.scrollTo(0, 0);
+  }, [route.view, route.focusStepId]);
+
   const completed = useMemo(
     () => completedSetFromMap(progress.completedMap),
     [progress.completedMap],
@@ -36,9 +51,18 @@ function AppShell() {
   return (
     <div className="min-h-screen font-body text-slate-800 dark:text-slate-100">
       <KubeBackground />
-      <Header theme={theme} onToggleTheme={toggleTheme} />
+      <Header
+        theme={theme}
+        onToggleTheme={toggleTheme}
+        view={route.view}
+        onNavigate={navigateTo}
+      />
 
       <main className="mx-auto max-w-5xl px-4 pb-20">
+        {route.view === "skill-check" ? (
+          <SkillCheck focusStepId={route.focusStepId} />
+        ) : (
+          <>
         {/* Hero */}
         <section className="py-8 text-center sm:py-10">
           <h2 className="font-display text-3xl font-extrabold leading-tight sm:text-4xl">
@@ -46,9 +70,9 @@ function AppShell() {
             <span className="text-kube-600 dark:text-kube-300">CKA</span> ☸️
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-sm font-semibold text-slate-600 dark:text-slate-300 sm:text-base">
-            A realistic, part-time plan for a working backend engineer: about
-            6–8 hours a week over 8 weeks. The week boundaries matter less than
-            finishing every hands-on checkpoint.
+            A realistic, part-time plan for busy engineers: about 6–8 hours a
+            week over 8 weeks. The week boundaries matter less than finishing
+            every hands-on checkpoint.
           </p>
           {studierCount !== null && studierCount > 0 && (
             <p className="mt-3 inline-block rounded-full border-2 border-kube-950/80 bg-white px-4 py-1 text-sm font-bold text-kube-800 dark:border-slate-300/25 dark:bg-slate-800 dark:text-kube-200">
@@ -152,6 +176,8 @@ function AppShell() {
             ))}
           </ul>
         </section>
+          </>
+        )}
 
         <footer className="mt-10 text-center text-xs font-semibold text-slate-500 dark:text-slate-400">
           Open source · your progress is private to your account · good luck,

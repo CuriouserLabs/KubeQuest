@@ -54,6 +54,43 @@ export interface Week {
   steps: Step[];
 }
 
+/** A single multiple-choice question in a step's skill check. */
+export interface McqQuestion {
+  id: string;
+  /** Question text. `code` spans use backticks (rendered via HintText). */
+  prompt: string;
+  choices: string[];
+  /** Index into `choices` of the correct answer. */
+  answerIndex: number;
+  /** Shown after checking answers. */
+  explanation: string;
+}
+
+/**
+ * A small hands-on activity verified programmatically: the student types the
+ * command they would run and it is checked locally against regex patterns —
+ * no cluster or server needed.
+ */
+export interface CommandDrill {
+  id: string;
+  /** What to accomplish, e.g. "Scale deployment `web` to 5 replicas." */
+  instruction: string;
+  /**
+   * Regex sources that must ALL match the submitted command after whitespace
+   * normalisation. Patterns accept both `kubectl` and the `k` alias.
+   */
+  requiredPatterns: string[];
+  /** A canonical correct answer, revealed on demand. */
+  sampleSolution: string;
+}
+
+/** The skill check attached to one main step (Step.id) of the plan. */
+export interface StepValidation {
+  stepId: string;
+  questions: McqQuestion[];
+  drills?: CommandDrill[];
+}
+
 export interface ReadinessCriterion {
   id: string;
   title: string;

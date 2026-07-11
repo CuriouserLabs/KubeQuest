@@ -1,12 +1,15 @@
 import { useAuth } from "../context/AuthContext";
 import type { Theme } from "../hooks/useTheme";
+import type { AppView } from "../utils/routing";
 
 interface HeaderProps {
   theme: Theme;
   onToggleTheme: () => void;
+  view: AppView;
+  onNavigate: (view: AppView) => void;
 }
 
-export function Header({ theme, onToggleTheme }: HeaderProps) {
+export function Header({ theme, onToggleTheme, view, onNavigate }: HeaderProps) {
   const { user, loading, available, signIn, signOutUser } = useAuth();
 
   return (
@@ -26,6 +29,21 @@ export function Header({ theme, onToggleTheme }: HeaderProps) {
             CKA study plan tracker
           </p>
         </div>
+
+        <nav aria-label="Sections" className="flex shrink-0 gap-1.5">
+          <NavTab
+            label="Plan"
+            emoji="🗺️"
+            active={view === "plan"}
+            onClick={() => onNavigate("plan")}
+          />
+          <NavTab
+            label="Skill Check"
+            emoji="🧪"
+            active={view === "skill-check"}
+            onClick={() => onNavigate("skill-check")}
+          />
+        </nav>
 
         <button
           type="button"
@@ -74,6 +92,35 @@ export function Header({ theme, onToggleTheme }: HeaderProps) {
           ))}
       </div>
     </header>
+  );
+}
+
+function NavTab({
+  label,
+  emoji,
+  active,
+  onClick,
+}: {
+  label: string;
+  emoji: string;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-current={active ? "page" : undefined}
+      className={`cartoon-btn px-3 py-2 text-sm ${
+        active
+          ? "bg-white text-kube-900 dark:bg-slate-800 dark:text-slate-100"
+          : "bg-kube-700 text-white hover:bg-kube-500 dark:bg-kube-800"
+      }`}
+    >
+      <span aria-hidden="true">{emoji}</span>
+      <span className="hidden sm:inline">{label}</span>
+      <span className="sr-only sm:hidden">{label}</span>
+    </button>
   );
 }
 

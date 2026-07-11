@@ -160,7 +160,7 @@ export const WEEKS: Week[] = [
         title: "Build your speed environment (use it from day one)",
         hints: [
           "Set this up now and use it in every session so it becomes reflex before exam day.",
-          "Doing everything fast, under time pressure, is one of your real gaps — speed is trained, not crammed.",
+          "Doing everything fast, under time pressure, is where most candidates fall short — speed is trained, not crammed.",
         ],
         subSteps: [
           {
@@ -204,14 +204,14 @@ export const WEEKS: Week[] = [
     badge: "Week 1",
     title: "Core model + speed habits",
     tagline:
-      "Lean on your Linux, Docker and YAML experience — the goal this week is fluency, not new theory.",
+      "Lean on any Linux, Docker and YAML experience you have — the goal this week is fluency, not new theory.",
     domain: "workloads",
     steps: [
       {
         id: "w1-model",
         title: "Understand the Kubernetes core model",
         hints: [
-          "You already have strong Linux, Docker and YAML skills — do not over-study what you know. Focus on what is Kubernetes-specific.",
+          "If you already have strong Linux, Docker and YAML skills, do not over-study what you know — focus on what is Kubernetes-specific.",
         ],
         subSteps: [
           {
@@ -295,7 +295,7 @@ export const WEEKS: Week[] = [
     badge: "Week 2",
     title: "Cluster Architecture & Installation",
     tagline:
-      "Your biggest genuine gap and the second-heaviest domain. kubeadm, certificates, upgrades, etcd.",
+      "The most common genuine gap and the second-heaviest domain. kubeadm, certificates, upgrades, etcd.",
     domain: "architecture",
     weightNote: "25% of the exam",
     steps: [
@@ -303,7 +303,7 @@ export const WEEKS: Week[] = [
         id: "w2-bootstrap",
         title: "Bootstrap a cluster with kubeadm",
         hints: [
-          "Bootstrapping and upgrading a cluster with kubeadm is on your \"grind\" list — limited hands-on cluster administration is exactly the gap this plan closes.",
+          "Bootstrapping and upgrading a cluster with kubeadm is on the \"grind\" list — limited hands-on cluster administration is exactly the gap this plan closes.",
         ],
         subSteps: [
           {
@@ -354,7 +354,7 @@ export const WEEKS: Week[] = [
         id: "w2-etcd",
         title: "etcd backup and restore",
         hints: [
-          "A classic, high-value exam task. Practise this until it is automatic — it is on your grind list, in the highest-yield list, and in the readiness bar.",
+          "A classic, high-value exam task. Practise this until it is automatic — it is on the grind list, in the highest-yield list, and in the readiness bar.",
         ],
         subSteps: [
           {
@@ -524,7 +524,7 @@ export const WEEKS: Week[] = [
         id: "w4-services",
         title: "Services and endpoints",
         hints: [
-          "NetworkPolicies and cluster DNS debugging are on your grind list — your general networking intuition helps, but the Kubernetes specifics need reps.",
+          "NetworkPolicies and cluster DNS debugging are on the grind list — general networking intuition helps, but the Kubernetes specifics need reps.",
         ],
         subSteps: [
           {
@@ -628,7 +628,7 @@ export const WEEKS: Week[] = [
     badge: "Week 5",
     title: "Storage + RBAC",
     tagline:
-      "Storage is the lightest domain but easy points — do not skip. RBAC is a grind-list gap.",
+      "Storage is the lightest domain but easy points — do not skip. RBAC is a classic grind-list gap.",
     domain: "storage",
     weightNote: "10% of the exam (+ RBAC from the 25% domain)",
     steps: [
@@ -666,7 +666,7 @@ export const WEEKS: Week[] = [
         id: "w5-rbac",
         title: "RBAC",
         hints: [
-          "RBAC (roles, bindings, service accounts) is on your grind list and scored under the heavyweight 25% architecture domain.",
+          "RBAC (roles, bindings, service accounts) is on the grind list and scored under the heavyweight 25% architecture domain.",
         ],
         subSteps: [
           {
@@ -724,7 +724,7 @@ export const WEEKS: Week[] = [
         id: "w6-node",
         title: "Node failures",
         hints: [
-          "Node troubleshooting (NotReady nodes, kubelet issues, static pods) is top of your grind list.",
+          "Node troubleshooting (NotReady nodes, kubelet issues, static pods) is top of the grind list.",
         ],
         subSteps: [
           {
@@ -807,7 +807,7 @@ export const WEEKS: Week[] = [
             kind: "task",
             domain: "troubleshooting",
             hints: [
-              "Your Linux background (systemctl, journald, log inspection) is a genuine advantage here — lean on it.",
+              "A Linux background (systemctl, journald, log inspection) is a genuine advantage here — if you have one, lean on it.",
               "The skill is triage order: describe → logs → node services → container runtime, without dithering.",
             ],
           },
@@ -845,7 +845,7 @@ export const WEEKS: Week[] = [
         id: "w7-sim",
         title: "Simulate the real thing",
         hints: [
-          "Your exam registration ($445) includes two Killer.sh simulator sessions and one free retake — the simulator sessions are for weeks 7 and 8.",
+          "Your exam registration includes two Killer.sh simulator sessions and one free retake — the simulator sessions are for weeks 7 and 8.",
         ],
         subSteps: [
           {
@@ -1092,7 +1092,7 @@ export const EXAM_FACTS: { emoji: string; text: string }[] = [
   { emoji: "⏱️", text: "2 hours, ~15–20 live tasks" },
   { emoji: "🎯", text: "66% to pass, partial credit" },
   { emoji: "📖", text: "Open book: kubernetes.io docs" },
-  { emoji: "💵", text: "$445 incl. retake + 2× Killer.sh" },
+  { emoji: "🔁", text: "Free retake + 2× Killer.sh" },
   { emoji: "🔄", text: "Tracks current k8s (~v1.35)" },
   { emoji: "🏅", text: "Valid 2 years" },
 ];

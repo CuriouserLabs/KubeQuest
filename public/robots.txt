@@ -1,0 +1,5 @@
+# https://kubequest.org
+User-agent: *
+Allow: /
+
+Sitemap: https://kubequest.org/sitemap.xml

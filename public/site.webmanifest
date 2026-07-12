@@ -1,0 +1,24 @@
+{
+  "name": "KubeQuest — CKA Study Plan Tracker",
+  "short_name": "KubeQuest",
+  "description": "A free, open-source tracker for the Certified Kubernetes Administrator (CKA) exam.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#eef4ff",
+  "theme_color": "#326ce5",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

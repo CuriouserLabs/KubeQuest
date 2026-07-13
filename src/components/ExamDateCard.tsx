@@ -1,8 +1,10 @@
 import { useId, useState } from "react";
+import type { TrackData } from "../types";
 import type { CompletedSet, PaceStatus } from "../utils/progress";
 import { paceInfo } from "../utils/progress";
 
 interface ExamDateCardProps {
+  track: TrackData;
   examDate: string | null;
   startedAtMs: number | null;
   completed: CompletedSet;
@@ -40,6 +42,7 @@ const PACE_STYLES: Record<PaceStatus, { label: string; emoji: string; className:
 };
 
 export function ExamDateCard({
+  track,
   examDate,
   startedAtMs,
   completed,
@@ -53,7 +56,7 @@ export function ExamDateCard({
 
   const pace =
     examDate !== null
-      ? paceInfo(examDate, startedAtMs ?? Date.now(), completed)
+      ? paceInfo(track, examDate, startedAtMs ?? Date.now(), completed)
       : null;
 
   return (
@@ -72,7 +75,7 @@ export function ExamDateCard({
             htmlFor={inputId}
             className="mt-3 block text-sm font-bold text-slate-600 dark:text-slate-300"
           >
-            When do you want to sit the exam?
+            When do you want to sit the {track.name} exam?
           </label>
           <div className="mt-1 flex flex-wrap items-center gap-2">
             <input
@@ -125,7 +128,8 @@ export function ExamDateCard({
             {confirmingReset ? (
               <div role="alertdialog" aria-label="Confirm progress reset" className="space-y-2">
                 <p className="text-sm font-bold text-rose-700 dark:text-rose-300">
-                  Wipe all ticked items and your exam date? This cannot be undone.
+                  Wipe all ticked {track.name} items and your {track.name} exam
+                  date? Other plans are untouched. This cannot be undone.
                 </p>
                 <div className="flex gap-2">
                   <button
@@ -158,7 +162,7 @@ export function ExamDateCard({
                 onClick={() => setConfirmingReset(true)}
                 className="text-xs font-bold text-slate-400 underline decoration-dotted underline-offset-2 hover:text-rose-500 dark:text-slate-500 dark:hover:text-rose-400"
               >
-                Reset my progress and start over
+                Reset my {track.name} progress and start over
               </button>
             )}
           </div>

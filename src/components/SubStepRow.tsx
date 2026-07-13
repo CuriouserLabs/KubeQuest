@@ -1,5 +1,5 @@
 import { useId, useState } from "react";
-import { KIND_META } from "../data/plan";
+import { KIND_META } from "../data/tracks";
 import type { SubStep } from "../types";
 import { HintText } from "./HintText";
 

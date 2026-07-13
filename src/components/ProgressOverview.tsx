@@ -1,4 +1,4 @@
-import { DOMAINS, WEEKS } from "../data/plan";
+import type { TrackData } from "../types";
 import type { CompletedSet } from "../utils/progress";
 import {
   domainCounts,
@@ -8,10 +8,16 @@ import {
   weekCounts,
 } from "../utils/progress";
 
-export function ProgressOverview({ completed }: { completed: CompletedSet }) {
-  const overall = overallCounts(completed);
+export function ProgressOverview({
+  track,
+  completed,
+}: {
+  track: TrackData;
+  completed: CompletedSet;
+}) {
+  const overall = overallCounts(track, completed);
   const overallPct = percent(overall);
-  const weightedPct = examWeightedPercent(completed);
+  const weightedPct = examWeightedPercent(track, completed);
 
   return (
     <section aria-labelledby="progress-heading" className="cartoon-card p-5">
@@ -42,8 +48,8 @@ export function ProgressOverview({ completed }: { completed: CompletedSet }) {
         By exam domain
       </h3>
       <ul className="mt-2 space-y-3">
-        {DOMAINS.map((domain) => {
-          const c = domainCounts(domain.id, completed);
+        {track.domains.map((domain) => {
+          const c = domainCounts(track, domain.id, completed);
           const pct = percent(c);
           return (
             <li key={domain.id}>
@@ -83,7 +89,7 @@ export function ProgressOverview({ completed }: { completed: CompletedSet }) {
         By week
       </h3>
       <ul className="mt-2 grid grid-cols-5 gap-2">
-        {WEEKS.map((week) => {
+        {track.weeks.map((week) => {
           const c = weekCounts(week, completed);
           const done = c.done === c.total;
           return (

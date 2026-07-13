@@ -1,16 +1,15 @@
 import type {
-  DomainId,
   DomainInfo,
+  ExamFact,
   ReadinessCriterion,
-  SubStep,
-  SubStepKind,
+  Resource,
   Week,
-} from "../types";
+} from "../../types";
 
 /**
  * The CKA study plan as a typed, static data structure.
  *
- * This is the single source of truth for all plan content, parsed from
+ * This is the single source of truth for all CKA plan content, parsed from
  * CKA_Study_Plan.md. Plan content is identical for every user, so it ships
  * with the app; Firestore stores only per-user completion state keyed by
  * the stable sub-step ids defined here.
@@ -78,34 +77,6 @@ export const DOMAINS: DomainInfo[] = [
       "bg-slate-200 text-slate-700 dark:bg-slate-500/20 dark:text-slate-300",
   },
 ];
-
-export const DOMAIN_MAP: Record<DomainId, DomainInfo> = Object.fromEntries(
-  DOMAINS.map((d) => [d.id, d]),
-) as Record<DomainId, DomainInfo>;
-
-export const KIND_META: Record<
-  SubStepKind,
-  { label: string; emoji: string; chipClass: string }
-> = {
-  topic: {
-    label: "Topic",
-    emoji: "📘",
-    chipClass:
-      "bg-sky-100 text-sky-800 dark:bg-sky-500/20 dark:text-sky-300",
-  },
-  task: {
-    label: "Hands-on",
-    emoji: "🛠️",
-    chipClass:
-      "bg-orange-100 text-orange-800 dark:bg-orange-500/20 dark:text-orange-300",
-  },
-  checkpoint: {
-    label: "Checkpoint",
-    emoji: "🏁",
-    chipClass:
-      "bg-green-100 text-green-800 dark:bg-green-500/20 dark:text-green-300",
-  },
-};
 
 export const WEEKS: Week[] = [
   {
@@ -1088,7 +1059,7 @@ export const READINESS: ReadinessCriterion[] = [
 ];
 
 /** Key exam facts, shown as chips on the dashboard. */
-export const EXAM_FACTS: { emoji: string; text: string }[] = [
+export const EXAM_FACTS: ExamFact[] = [
   { emoji: "⏱️", text: "2 hours, ~15–20 live tasks" },
   { emoji: "🎯", text: "66% to pass, partial credit" },
   { emoji: "📖", text: "Open book: kubernetes.io docs" },
@@ -1097,7 +1068,7 @@ export const EXAM_FACTS: { emoji: string; text: string }[] = [
   { emoji: "🏅", text: "Valid 2 years" },
 ];
 
-export const RESOURCES: { name: string; url: string; note: string }[] = [
+export const RESOURCES: Resource[] = [
   {
     name: "KodeKloud — CKA with Practice Tests",
     url: "https://kodekloud.com/courses/certified-kubernetes-administrator-cka/",
@@ -1124,10 +1095,3 @@ export const RESOURCES: { name: string; url: string; note: string }[] = [
     note: "Optional book. Do not collect more than this.",
   },
 ];
-
-/** All sub-steps in plan order, flattened. */
-export const ALL_SUB_STEPS: SubStep[] = WEEKS.flatMap((w) =>
-  w.steps.flatMap((s) => s.subSteps),
-);
-
-export const TOTAL_SUB_STEPS = ALL_SUB_STEPS.length;

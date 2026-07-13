@@ -1,3 +1,4 @@
+import type { TrackData } from "../types";
 import type { CompletedSet } from "../utils/progress";
 import { readinessStatuses } from "../utils/progress";
 
@@ -5,8 +6,14 @@ import { readinessStatuses } from "../utils/progress";
  * The "am I ready to book the exam?" panel. Each criterion from the plan's
  * readiness bar lights up automatically as its required work is completed.
  */
-export function ReadinessCard({ completed }: { completed: CompletedSet }) {
-  const statuses = readinessStatuses(completed);
+export function ReadinessCard({
+  track,
+  completed,
+}: {
+  track: TrackData;
+  completed: CompletedSet;
+}) {
+  const statuses = readinessStatuses(track, completed);
   const metCount = statuses.filter((s) => s.met).length;
   const allMet = metCount === statuses.length;
 

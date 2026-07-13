@@ -1,7 +1,7 @@
-import type { StepValidation } from "../types";
+import type { StepValidation } from "../../types";
 
 /**
- * Skill checks: one per main step of the plan, keyed by Step.id.
+ * CKA skill checks: one per main step of the plan, keyed by Step.id.
  *
  * Each check has multiple-choice questions and, where it makes sense, small
  * command drills that are verified locally with regex patterns — no cluster
@@ -1511,7 +1511,3 @@ export const VALIDATIONS: StepValidation[] = [
     ],
   },
 ];
-
-export const VALIDATION_MAP: Record<string, StepValidation> = Object.fromEntries(
-  VALIDATIONS.map((v) => [v.stepId, v]),
-);

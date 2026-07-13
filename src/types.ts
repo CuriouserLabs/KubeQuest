@@ -1,12 +1,27 @@
 import type { Timestamp } from "firebase/firestore";
 
-/** The five scored CKA domains, plus "craft" for exam technique / speed work. */
+/** The certification tracks the app offers. Ids are persisted (exam-date map
+ *  keys in the user doc) — never rename existing ones. */
+export type TrackId = "cka" | "ckad";
+
+/**
+ * Exam domain ids across all tracks: the five scored CKA domains, the four
+ * CKAD-specific ones, "networking" (scored in both exams), and "craft" for
+ * unscored exam technique / speed work (shared by all tracks).
+ */
 export type DomainId =
+  // CKA
   | "troubleshooting"
   | "architecture"
-  | "networking"
   | "workloads"
   | "storage"
+  // CKAD
+  | "app-design"
+  | "app-deployment"
+  | "app-environment"
+  | "observability"
+  // shared
+  | "networking"
   | "craft";
 
 export interface DomainInfo {
@@ -99,13 +114,66 @@ export interface ReadinessCriterion {
   requiredIds: string[];
 }
 
+export interface ExamFact {
+  emoji: string;
+  text: string;
+}
+
+export interface Resource {
+  name: string;
+  url: string;
+  note: string;
+}
+
+/**
+ * One certification track: all content and metadata for a study plan and its
+ * skill checks. Adding a new certification means adding one of these (plus
+ * its data files) — no component changes.
+ */
+export interface Track {
+  id: TrackId;
+  /** Short name shown in navigation and headings, e.g. "CKA". */
+  name: string;
+  /** Full certification name, e.g. "Certified Kubernetes Administrator". */
+  certName: string;
+  emoji: string;
+  /** Route base for this track, e.g. "/cka". */
+  basePath: string;
+  /** Hero tagline shown under "Chart your course to the <name>". */
+  heroTagline: string;
+  /** One-liner used on the landing page track card. */
+  landingBlurb: string;
+  domains: DomainInfo[];
+  weeks: Week[];
+  readiness: ReadinessCriterion[];
+  examFacts: ExamFact[];
+  resources: Resource[];
+  validations: StepValidation[];
+  seo: { title: string; description: string };
+}
+
+/** A Track plus lookups derived once at module load. */
+export interface TrackData extends Track {
+  domainMap: Record<DomainId, DomainInfo>;
+  validationMap: Record<string, StepValidation>;
+  /** All sub-steps in plan order, flattened. */
+  allSubSteps: SubStep[];
+}
+
 /** The single per-user Firestore document: users/{uid}. */
 export interface UserDoc {
   displayName: string | null;
   email: string | null;
   photoURL: string | null;
+  /** Completed sub-step ids across ALL tracks (ids are globally unique). */
   completedIds: Record<string, true>;
+  /**
+   * Legacy field from the CKA-only era: the CKA exam date. Still written for
+   * CKA so older clients keep working; `examDates.cka` wins when present.
+   */
   examDate: string | null; // ISO date, e.g. "2026-09-01"
+  /** Per-track target exam dates, keyed by TrackId. */
+  examDates?: Partial<Record<TrackId, string | null>>;
   createdAt: Timestamp | null;
   updatedAt: Timestamp | null;
 }

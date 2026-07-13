@@ -7,11 +7,10 @@ import {
   onSnapshot,
   serverTimestamp,
   setDoc,
-  updateDoc,
   type DocumentReference,
 } from "firebase/firestore";
 import { db } from "../lib/firebase";
-import type { UserDoc } from "../types";
+import type { TrackData, TrackId, UserDoc } from "../types";
 
 interface ProgressState {
   /** True while the first snapshot for the current user is loading. */
@@ -20,19 +19,35 @@ interface ProgressState {
   loadError: string | null;
   /** Transient write error, surfaced as a toast and auto-cleared. */
   saveError: string | null;
+  /** Completed sub-step ids across ALL tracks (ids are globally unique). */
   completedMap: Record<string, true>;
-  examDate: string | null;
+  /** Target exam date per track. */
+  examDates: Record<TrackId, string | null>;
   /** Millis of the user's first session, used by the pace indicator. */
   startedAtMs: number | null;
   toggleSubStep: (id: string, value: boolean) => void;
   setManySubSteps: (ids: string[], value: boolean) => void;
-  setExamDate: (isoDate: string | null) => void;
-  resetProgress: () => Promise<void>;
+  setExamDate: (trackId: TrackId, isoDate: string | null) => void;
+  /** Clears completed items and the exam date for ONE track only. */
+  resetTrackProgress: (track: TrackData) => Promise<void>;
 }
 
 function userRef(uid: string): DocumentReference {
   if (!db) throw new Error("Firestore is not configured");
   return doc(db, "users", uid);
+}
+
+/**
+ * The legacy top-level `examDate` field predates tracks and holds the CKA
+ * date; `examDates.cka` wins when set (hasOwnProperty, so an explicit null —
+ * a cleared date — is respected and does not fall back to the legacy value).
+ */
+function examDatesFromDoc(data: UserDoc | null): Record<TrackId, string | null> {
+  const dates = data?.examDates ?? {};
+  return {
+    cka: "cka" in dates ? (dates.cka ?? null) : (data?.examDate ?? null),
+    ckad: dates.ckad ?? null,
+  };
 }
 
 /**
@@ -87,6 +102,7 @@ export function useProgress(user: User | null): ProgressState {
           photoURL: user.photoURL,
           completedIds: {},
           examDate: null,
+          examDates: {},
         };
         setDoc(ref, {
           ...initial,
@@ -109,17 +125,6 @@ export function useProgress(user: User | null): ProgressState {
     );
     return unsubscribe;
   }, [user]);
-
-  const write = useCallback(
-    (fields: Record<string, unknown>, failureMessage: string) => {
-      if (!user || !db) return;
-      updateDoc(userRef(user.uid), {
-        ...fields,
-        updatedAt: serverTimestamp(),
-      }).catch(() => showSaveError(failureMessage));
-    },
-    [user, showSaveError],
-  );
 
   const setManySubSteps = useCallback(
     (ids: string[], value: boolean) => {
@@ -144,23 +149,45 @@ export function useProgress(user: User | null): ProgressState {
   );
 
   const setExamDate = useCallback(
-    (isoDate: string | null) =>
-      write({ examDate: isoDate }, "Saving your exam date failed."),
-    [write],
+    (trackId: TrackId, isoDate: string | null) => {
+      if (!user || !db) return;
+      setDoc(
+        userRef(user.uid),
+        {
+          examDates: { [trackId]: isoDate },
+          // Keep the legacy CKA field in sync for older clients.
+          ...(trackId === "cka" ? { examDate: isoDate } : {}),
+          updatedAt: serverTimestamp(),
+        },
+        { merge: true },
+      ).catch(() => showSaveError("Saving your exam date failed."));
+    },
+    [user, showSaveError],
   );
 
-  const resetProgress = useCallback(async () => {
-    if (!user || !db) return;
-    try {
-      await updateDoc(userRef(user.uid), {
-        completedIds: {},
-        examDate: null,
-        updatedAt: serverTimestamp(),
-      });
-    } catch {
-      showSaveError("Resetting your progress failed. Please try again.");
-    }
-  }, [user, showSaveError]);
+  const resetTrackProgress = useCallback(
+    async (track: TrackData) => {
+      if (!user || !db) return;
+      const completedIds = Object.fromEntries(
+        track.allSubSteps.map((s) => [s.id, deleteField()]),
+      );
+      try {
+        await setDoc(
+          userRef(user.uid),
+          {
+            completedIds,
+            examDates: { [track.id]: null },
+            ...(track.id === "cka" ? { examDate: null } : {}),
+            updatedAt: serverTimestamp(),
+          },
+          { merge: true },
+        );
+      } catch {
+        showSaveError("Resetting your progress failed. Please try again.");
+      }
+    },
+    [user, showSaveError],
+  );
 
   return useMemo(
     () => ({
@@ -168,12 +195,12 @@ export function useProgress(user: User | null): ProgressState {
       loadError,
       saveError,
       completedMap: data?.completedIds ?? {},
-      examDate: data?.examDate ?? null,
+      examDates: examDatesFromDoc(data),
       startedAtMs: data?.createdAt ? data.createdAt.toMillis() : null,
       toggleSubStep,
       setManySubSteps,
       setExamDate,
-      resetProgress,
+      resetTrackProgress,
     }),
     [
       loading,
@@ -183,7 +210,7 @@ export function useProgress(user: User | null): ProgressState {
       toggleSubStep,
       setManySubSteps,
       setExamDate,
-      resetProgress,
+      resetTrackProgress,
     ],
   );
 }

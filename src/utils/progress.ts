@@ -1,5 +1,4 @@
-import { ALL_SUB_STEPS, READINESS, WEEKS } from "../data/plan";
-import type { DomainId, ReadinessCriterion, Step, Week } from "../types";
+import type { DomainId, ReadinessCriterion, Step, TrackData, Week } from "../types";
 
 export interface Counts {
   done: number;
@@ -30,9 +29,12 @@ export function weekCounts(week: Week, completed: CompletedSet): Counts {
   return { done, total };
 }
 
-export function overallCounts(completed: CompletedSet): Counts {
-  const done = ALL_SUB_STEPS.filter((s) => completed.has(s.id)).length;
-  return { done, total: ALL_SUB_STEPS.length };
+export function overallCounts(
+  track: TrackData,
+  completed: CompletedSet,
+): Counts {
+  const done = track.allSubSteps.filter((s) => completed.has(s.id)).length;
+  return { done, total: track.allSubSteps.length };
 }
 
 export function percent({ done, total }: Counts): number {
@@ -40,10 +42,11 @@ export function percent({ done, total }: Counts): number {
 }
 
 export function domainCounts(
+  track: TrackData,
   domain: DomainId,
   completed: CompletedSet,
 ): Counts {
-  const subs = ALL_SUB_STEPS.filter((s) => s.domain === domain);
+  const subs = track.allSubSteps.filter((s) => s.domain === domain);
   return {
     done: subs.filter((s) => completed.has(s.id)).length,
     total: subs.length,
@@ -55,18 +58,15 @@ export function domainCounts(
  * much of the *scored* exam surface their completed work covers.
  * Unscored "craft" items are excluded here (they still count in overall %).
  */
-export function examWeightedPercent(completed: CompletedSet): number {
-  const weights: [DomainId, number][] = [
-    ["troubleshooting", 30],
-    ["architecture", 25],
-    ["networking", 20],
-    ["workloads", 15],
-    ["storage", 10],
-  ];
+export function examWeightedPercent(
+  track: TrackData,
+  completed: CompletedSet,
+): number {
   let score = 0;
-  for (const [domain, weight] of weights) {
-    const c = domainCounts(domain, completed);
-    if (c.total > 0) score += weight * (c.done / c.total);
+  for (const domain of track.domains) {
+    if (domain.weight === 0) continue;
+    const c = domainCounts(track, domain.id, completed);
+    if (c.total > 0) score += domain.weight * (c.done / c.total);
   }
   return Math.round(score);
 }
@@ -78,8 +78,11 @@ export interface ReadinessStatus {
   met: boolean;
 }
 
-export function readinessStatuses(completed: CompletedSet): ReadinessStatus[] {
-  return READINESS.map((criterion) => {
+export function readinessStatuses(
+  track: TrackData,
+  completed: CompletedSet,
+): ReadinessStatus[] {
+  return track.readiness.map((criterion) => {
     const done = criterion.requiredIds.filter((id) => completed.has(id)).length;
     const total = criterion.requiredIds.length;
     return { criterion, done, total, met: done === total };
@@ -100,6 +103,7 @@ export interface PaceInfo {
  * started (their user doc's createdAt) and their target exam date.
  */
 export function paceInfo(
+  track: TrackData,
   examDateIso: string,
   startedAtMs: number,
   completed: CompletedSet,
@@ -107,7 +111,7 @@ export function paceInfo(
 ): PaceInfo {
   const examMs = new Date(`${examDateIso}T00:00:00`).getTime();
   const daysLeft = Math.ceil((examMs - nowMs) / 86_400_000);
-  const actual = percent(overallCounts(completed));
+  const actual = percent(overallCounts(track, completed));
 
   const span = examMs - startedAtMs;
   const elapsed = nowMs - startedAtMs;
@@ -126,8 +130,11 @@ export function paceInfo(
 }
 
 /** First week (in plan order) that still has unfinished sub-steps. */
-export function firstUnfinishedWeekId(completed: CompletedSet): string | null {
-  for (const week of WEEKS) {
+export function firstUnfinishedWeekId(
+  track: TrackData,
+  completed: CompletedSet,
+): string | null {
+  for (const week of track.weeks) {
     const c = weekCounts(week, completed);
     if (c.done < c.total) return week.id;
   }

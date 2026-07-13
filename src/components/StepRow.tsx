@@ -1,12 +1,12 @@
 import { useEffect, useId, useState } from "react";
-import { VALIDATION_MAP } from "../data/validation";
-import type { Step } from "../types";
+import type { Step, TrackData } from "../types";
 import { navigateTo } from "../utils/routing";
 import { stepCounts, type CompletedSet } from "../utils/progress";
 import { HintText } from "./HintText";
 import { SubStepRow } from "./SubStepRow";
 
 interface StepRowProps {
+  track: TrackData;
   step: Step;
   completed: CompletedSet;
   readOnly: boolean;
@@ -21,6 +21,7 @@ interface StepRowProps {
 const nudgedSteps = new Set<string>();
 
 export function StepRow({
+  track,
   step,
   completed,
   readOnly,
@@ -35,7 +36,7 @@ export function StepRow({
   const [nudge, setNudge] = useState<{ pendingSubId: string | null } | null>(null);
   const { done, total } = stepCounts(step, completed);
   const allDone = done === total && total > 0;
-  const validation = VALIDATION_MAP[step.id];
+  const validation = track.validationMap[step.id];
   const showBulb = step.hints.length > 0 || !!validation;
 
   const completeStep = (pendingSubId: string | null) => {
@@ -140,7 +141,13 @@ export function StepRow({
                 Before ticking this off, validate what you've learned with{" "}
                 <button
                   type="button"
-                  onClick={() => navigateTo("skill-check", step.id)}
+                  onClick={() =>
+                    navigateTo({
+                      view: "skill-check",
+                      trackId: track.id,
+                      focusStepId: step.id,
+                    })
+                  }
                   className="cursor-pointer font-bold text-kube-700 underline decoration-2 underline-offset-2 hover:text-kube-500 dark:text-kube-300 dark:hover:text-kube-200"
                 >
                   this step's skill check
@@ -173,7 +180,11 @@ export function StepRow({
           onValidate={() => {
             nudgedSteps.add(step.id);
             setNudge(null);
-            navigateTo("skill-check", step.id);
+            navigateTo({
+              view: "skill-check",
+              trackId: track.id,
+              focusStepId: step.id,
+            });
           }}
           onProceed={() => {
             nudgedSteps.add(step.id);

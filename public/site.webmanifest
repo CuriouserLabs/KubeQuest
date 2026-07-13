@@ -1,7 +1,7 @@
 {
-  "name": "KubeQuest — CKA Study Plan Tracker",
+  "name": "KubeQuest — CKA & CKAD Study Plan Tracker",
   "short_name": "KubeQuest",
-  "description": "A free, open-source tracker for the Certified Kubernetes Administrator (CKA) exam.",
+  "description": "Free, open-source study plans and progress trackers for the CKA and CKAD Kubernetes certifications.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

@@ -1,24 +1,28 @@
-# ☸️ KubeQuest — CKA Study Plan Tracker
+# ☸️ KubeQuest — CKA & CKAD Study Plan Tracker
 
-A community web app for following and tracking progress through a realistic,
-part-time **CKA (Certified Kubernetes Administrator)** study plan
-(see [CKA_Study_Plan.md](CKA_Study_Plan.md), the single source of truth for
-all plan content).
+A community web app for following and tracking progress through realistic,
+part-time study plans for the **CKA (Certified Kubernetes Administrator)** and
+**CKAD (Certified Kubernetes Application Developer)** exams
+(see [CKA_Study_Plan.md](CKA_Study_Plan.md) and
+[CKAD_Study_Plan.md](CKAD_Study_Plan.md), the human-readable sources of truth
+for the plan content).
 
-- 🗺️ The full plan as an expandable, checkable tree: weeks → steps → sub-steps
-  (topics, hands-on tasks, checkpoints), each with inline hints and supporting
-  points from the plan.
-- 📈 Progress visualization: overall %, per-week and per-domain breakdowns
-  weighted by the official exam domain weights (Troubleshooting 30%,
-  Cluster Architecture 25%, Networking 20%, Workloads 15%, Storage 10%).
-- 🚦 A readiness bar that lights up automatically as you complete the relevant
-  work — a clear "am I ready to book the exam?" signal.
-- 🧪 A **Skill Check** tab: per-step multiple-choice quizzes plus command
-  drills verified locally with regex patterns (no cluster or backend needed),
-  so students can validate their knowledge before ticking a step off. The UI
-  nudges this via the step hints and a pop-up when completing a step. Results
-  are deliberately not persisted and not linked to progress tracking.
-- 🗓️ Optional target exam date with countdown and pace indicator.
+- 🏠 A landing page (`/`) that briefs students on both exams — who each is
+  for, how they differ, and which to take — and routes them into a track.
+- 🗺️ Each track's full plan as an expandable, checkable tree: weeks → steps →
+  sub-steps (topics, hands-on tasks, checkpoints), each with inline hints and
+  supporting points from the plan.
+- 📈 Progress visualization per track: overall %, per-week and per-domain
+  breakdowns weighted by the official exam domain weights.
+- 🚦 A readiness bar per track that lights up automatically as you complete
+  the relevant work — a clear "am I ready to book the exam?" signal.
+- 🧪 A **Skill Check** tab per track: per-step multiple-choice quizzes plus
+  command drills verified locally with regex patterns (no cluster or backend
+  needed), so students can validate their knowledge before ticking a step
+  off. The UI nudges this via the step hints and a pop-up when completing a
+  step. Results are deliberately not persisted and not linked to progress
+  tracking.
+- 🗓️ Optional target exam date per track with countdown and pace indicator.
 - 🔐 Google sign-in; progress syncs across devices via Firestore. Signed-out
   visitors can browse the whole plan read-only.
 - 🌞/🌙 Light and dark mode, mobile-first, keyboard navigable.
@@ -35,21 +39,25 @@ all plan content).
 
 ### Data model
 
-Plan content is identical for every user, so it ships with the app as a typed,
-static TypeScript structure ([src/data/plan.ts](src/data/plan.ts)) — it is
-**not** stored in Firestore. Firestore holds only per-user state, one document
-per user to keep reads cheap:
+Plan content is identical for every user, so it ships with the app as typed,
+static TypeScript structures (one directory per track under `src/data/`,
+assembled by the track registry [src/data/tracks.ts](src/data/tracks.ts)) —
+it is **not** stored in Firestore. Firestore holds only per-user state, one
+document per user to keep reads cheap:
 
 ```
 users/{uid} = {
   displayName, email, photoURL,
-  completedIds: { [subStepId]: true },  // map of completed sub-step ids
-  examDate: string | null,
+  completedIds: { [subStepId]: true },  // completed sub-step ids, ALL tracks
+  examDate: string | null,              // legacy CKA field, kept in sync
+  examDates: { cka?, ckad? },           // target exam date per track
   createdAt, updatedAt
 }
 ```
 
-Step/week/domain completion is derived client-side from `completedIds`.
+Sub-step ids are globally unique across tracks (CKAD ids carry a `ckad-`
+prefix), so one `completedIds` map serves every track. Step/week/domain
+completion is derived client-side from `completedIds`.
 Checkbox writes rely on the Firestore SDK's latency compensation, so ticking a
 box updates the UI instantly while the write completes in the background.
 
@@ -131,17 +139,21 @@ Authentication → Settings → Authorized domains if it isn't already.
 
 ```
 src/
-  data/plan.ts          # the study plan as typed static data (source of truth)
-  data/validation.ts    # per-step skill checks: MCQs + regex-verified drills
-  types.ts              # shared types (plan structure, Firestore user doc)
+  data/tracks.ts        # track registry: assembles every certification track
+  data/cka/plan.ts      # CKA study plan as typed static data
+  data/cka/validation.ts    # CKA skill checks: MCQs + regex-verified drills
+  data/ckad/plan.ts     # CKAD study plan as typed static data
+  data/ckad/validation.ts   # CKAD skill checks
+  types.ts              # shared types (tracks, plan structure, user doc)
   utils/progress.ts     # derived progress: per-week/domain %, readiness, pace
-  utils/routing.ts      # tiny hash router (#/ plan, #/skill-check)
+  utils/routing.ts      # tiny path router (/, /cka, /ckad, .../skill-check)
+  utils/seo.ts          # per-route title/description/canonical
   lib/firebase.ts       # Firebase init from env vars (optional at dev time)
   context/AuthContext.tsx
   hooks/useProgress.ts  # users/{uid} sync with optimistic checkbox writes
   hooks/useStudierCount.ts
   hooks/useTheme.ts     # light/dark toggle persisted to localStorage
-  components/           # Header, dashboard cards, plan tree, background art
+  components/           # Header, landing page, dashboard cards, plan tree
 firestore.rules         # per-user isolation + anonymous counter rules
 firebase.json           # Hosting config with SPA rewrite
 .env.example            # Firebase web config keys the app expects
@@ -149,7 +161,14 @@ firebase.json           # Hosting config with SPA rewrite
 
 ## Contributing
 
-The plan content lives entirely in `src/data/plan.ts`. Every step and sub-step
-has a stable, unique id — **never change existing ids**, since they are the
-keys under which users' completed work is stored. Adding new sub-steps with
-new ids is safe.
+Plan content lives entirely under `src/data/<track>/`. Every step and
+sub-step has a stable, unique id — **never change existing ids**, since they
+are the keys under which users' completed work is stored (and ids must stay
+unique across all tracks — new tracks should prefix theirs, like `ckad-`).
+Adding new sub-steps with new ids is safe.
+
+Adding a whole new certification track means: a new `src/data/<track>/`
+directory (plan + validation), one entry in `TRACKS` in
+[src/data/tracks.ts](src/data/tracks.ts), the track id in
+`src/utils/routing.ts` and `src/types.ts`, plus sitemap/firebase-header
+entries — no component changes.

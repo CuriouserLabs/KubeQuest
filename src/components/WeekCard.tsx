@@ -1,10 +1,10 @@
 import { useId, useState } from "react";
-import { DOMAIN_MAP } from "../data/plan";
-import type { Week } from "../types";
+import type { TrackData, Week } from "../types";
 import { percent, weekCounts, type CompletedSet } from "../utils/progress";
 import { StepRow } from "./StepRow";
 
 interface WeekCardProps {
+  track: TrackData;
   week: Week;
   completed: CompletedSet;
   readOnly: boolean;
@@ -14,6 +14,7 @@ interface WeekCardProps {
 }
 
 export function WeekCard({
+  track,
   week,
   completed,
   readOnly,
@@ -25,7 +26,7 @@ export function WeekCard({
   const [open, setOpen] = useState(defaultOpen);
   const counts = weekCounts(week, completed);
   const pct = percent(counts);
-  const domain = DOMAIN_MAP[week.domain];
+  const domain = track.domainMap[week.domain];
   const allDone = counts.done === counts.total;
 
   return (
@@ -93,6 +94,7 @@ export function WeekCard({
             {week.steps.map((step) => (
               <StepRow
                 key={step.id}
+                track={track}
                 step={step}
                 completed={completed}
                 readOnly={readOnly}

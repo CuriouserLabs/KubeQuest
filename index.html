@@ -4,15 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- Primary meta -->
-    <title>KubeQuest — CKA Study Plan &amp; Progress Tracker</title>
+    <!-- Primary meta (site-wide defaults; per-route values are set in JS, see src/utils/seo.ts) -->
+    <title>KubeQuest — CKA &amp; CKAD Study Plans &amp; Progress Tracker</title>
     <meta
       name="description"
-      content="A free, open-source tracker for the Certified Kubernetes Administrator (CKA) exam: a realistic part-time study plan with progress tracking, domain-weighted readiness, and hands-on skill checks."
+      content="Free, open-source study plans and progress trackers for the CKA and CKAD Kubernetes certifications: realistic part-time plans, domain-weighted readiness, and hands-on skill checks."
     />
     <meta
       name="keywords"
-      content="CKA, Certified Kubernetes Administrator, Kubernetes certification, CKA study plan, CKA exam prep, Kubernetes exam tracker, kubectl practice, CKA study guide"
+      content="CKA, CKAD, Certified Kubernetes Administrator, Certified Kubernetes Application Developer, Kubernetes certification, CKA study plan, CKAD study plan, CKA vs CKAD, Kubernetes exam prep, kubectl practice"
     />
     <meta name="author" content="KubeQuest" />
     <meta name="robots" content="index, follow, max-image-preview:large" />
@@ -30,28 +30,28 @@
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="KubeQuest" />
-    <meta property="og:title" content="KubeQuest — CKA Study Plan &amp; Progress Tracker" />
+    <meta property="og:title" content="KubeQuest — CKA &amp; CKAD Study Plans &amp; Progress Tracker" />
     <meta
       property="og:description"
-      content="A free, open-source tracker for the Certified Kubernetes Administrator (CKA) exam: a realistic part-time study plan with progress tracking and hands-on skill checks."
+      content="Free, open-source study plans and progress trackers for the CKA and CKAD Kubernetes certifications: realistic part-time plans with progress tracking and hands-on skill checks."
     />
     <meta property="og:url" content="https://kubequest.org/" />
     <meta property="og:image" content="https://kubequest.org/og-image.jpg" />
     <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="KubeQuest — chart your course to the CKA" />
+    <meta property="og:image:alt" content="KubeQuest — chart your course to a Kubernetes certification" />
     <meta property="og:locale" content="en_US" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="KubeQuest — CKA Study Plan &amp; Progress Tracker" />
+    <meta name="twitter:title" content="KubeQuest — CKA &amp; CKAD Study Plans &amp; Progress Tracker" />
     <meta
       name="twitter:description"
-      content="A free, open-source tracker for the Certified Kubernetes Administrator (CKA) exam: a realistic part-time study plan with progress tracking and hands-on skill checks."
+      content="Free, open-source study plans and progress trackers for the CKA and CKAD Kubernetes certifications: realistic part-time plans with progress tracking and hands-on skill checks."
     />
     <meta name="twitter:image" content="https://kubequest.org/og-image.jpg" />
-    <meta name="twitter:image:alt" content="KubeQuest — chart your course to the CKA" />
+    <meta name="twitter:image:alt" content="KubeQuest — chart your course to a Kubernetes certification" />
 
     <!-- Structured data -->
     <script type="application/ld+json">
@@ -60,7 +60,7 @@
         "@type": "WebApplication",
         "name": "KubeQuest",
         "url": "https://kubequest.org/",
-        "description": "A free, open-source tracker for the Certified Kubernetes Administrator (CKA) exam: a realistic part-time study plan with progress tracking, domain-weighted readiness, and hands-on skill checks.",
+        "description": "Free, open-source study plans and progress trackers for the CKA and CKAD Kubernetes certifications: realistic part-time plans, domain-weighted readiness, and hands-on skill checks.",
         "applicationCategory": "EducationalApplication",
         "operatingSystem": "Any (web browser)",
         "inLanguage": "en",
@@ -70,10 +70,28 @@
           "price": "0",
           "priceCurrency": "USD"
         },
-        "about": {
-          "@type": "Thing",
-          "name": "Certified Kubernetes Administrator (CKA) certification"
-        }
+        "about": [
+          {
+            "@type": "Thing",
+            "name": "Certified Kubernetes Administrator (CKA) certification"
+          },
+          {
+            "@type": "Thing",
+            "name": "Certified Kubernetes Application Developer (CKAD) certification"
+          }
+        ],
+        "hasPart": [
+          {
+            "@type": "WebPage",
+            "name": "CKA Study Plan & Progress Tracker",
+            "url": "https://kubequest.org/cka"
+          },
+          {
+            "@type": "WebPage",
+            "name": "CKAD Study Plan & Progress Tracker",
+            "url": "https://kubequest.org/ckad"
+          }
+        ]
       }
     </script>
 

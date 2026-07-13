@@ -1,48 +1,79 @@
+import { TRACKS, TRACK_MAP } from "../data/tracks";
 import { useAuth } from "../context/AuthContext";
 import type { Theme } from "../hooks/useTheme";
-import type { AppView } from "../utils/routing";
+import type { AppRoute } from "../utils/routing";
 
 interface HeaderProps {
   theme: Theme;
   onToggleTheme: () => void;
-  view: AppView;
-  onNavigate: (view: AppView) => void;
+  route: AppRoute;
+  onNavigate: (route: AppRoute) => void;
 }
 
-export function Header({ theme, onToggleTheme, view, onNavigate }: HeaderProps) {
+export function Header({ theme, onToggleTheme, route, onNavigate }: HeaderProps) {
   const { user, loading, available, signIn, signOutUser } = useAuth();
+  const track = route.view === "landing" ? null : TRACK_MAP[route.trackId];
 
   return (
     <header className="sticky top-0 z-20 border-b-[3px] border-kube-950/90 bg-kube-600 dark:border-slate-300/25 dark:bg-kube-900">
       <div className="mx-auto flex max-w-5xl items-center gap-3 px-4 py-3">
-        <span
-          aria-hidden="true"
-          className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl border-[3px] border-kube-950/90 bg-white text-2xl shadow-cartoon-sm dark:border-slate-300/25"
+        <button
+          type="button"
+          onClick={() => onNavigate({ view: "landing" })}
+          className="flex min-w-0 flex-1 cursor-pointer items-center gap-3 text-left"
+          aria-label="KubeQuest home"
         >
-          ☸️
-        </span>
-        <div className="min-w-0 flex-1">
-          <h1 className="truncate font-display text-xl font-extrabold leading-tight text-white sm:text-2xl">
-            KubeQuest
-          </h1>
-          <p className="truncate text-xs font-semibold text-kube-100">
-            CKA study plan tracker
-          </p>
-        </div>
+          <span
+            aria-hidden="true"
+            className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl border-[3px] border-kube-950/90 bg-white text-2xl shadow-cartoon-sm dark:border-slate-300/25"
+          >
+            ☸️
+          </span>
+          <span className="min-w-0">
+            <span className="block truncate font-display text-xl font-extrabold leading-tight text-white sm:text-2xl">
+              KubeQuest
+            </span>
+            <span className="block truncate text-xs font-semibold text-kube-100">
+              {track
+                ? `${track.name} study plan tracker`
+                : "CKA & CKAD study plans"}
+            </span>
+          </span>
+        </button>
 
         <nav aria-label="Sections" className="flex shrink-0 gap-1.5">
-          <NavTab
-            label="Plan"
-            emoji="🗺️"
-            active={view === "plan"}
-            onClick={() => onNavigate("plan")}
-          />
-          <NavTab
-            label="Skill Check"
-            emoji="🧪"
-            active={view === "skill-check"}
-            onClick={() => onNavigate("skill-check")}
-          />
+          {track ? (
+            <>
+              <NavTab
+                label={`${track.name} Plan`}
+                emoji="🗺️"
+                active={route.view === "plan"}
+                onClick={() => onNavigate({ view: "plan", trackId: track.id })}
+              />
+              <NavTab
+                label="Skill Check"
+                emoji="🧪"
+                active={route.view === "skill-check"}
+                onClick={() =>
+                  onNavigate({
+                    view: "skill-check",
+                    trackId: track.id,
+                    focusStepId: null,
+                  })
+                }
+              />
+            </>
+          ) : (
+            TRACKS.map((t) => (
+              <NavTab
+                key={t.id}
+                label={t.name}
+                emoji={t.emoji}
+                active={false}
+                onClick={() => onNavigate({ view: "plan", trackId: t.id })}
+              />
+            ))
+          )}
         </nav>
 
         <button

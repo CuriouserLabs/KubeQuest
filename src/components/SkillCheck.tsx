@@ -1,11 +1,17 @@
 import { useEffect, useId, useMemo, useRef, useState } from "react";
-import { DOMAIN_MAP, WEEKS } from "../data/plan";
-import { VALIDATION_MAP } from "../data/validation";
-import type { CommandDrill, McqQuestion, Step, StepValidation, Week } from "../types";
+import type {
+  CommandDrill,
+  McqQuestion,
+  Step,
+  StepValidation,
+  TrackData,
+  Week,
+} from "../types";
 import { HintText } from "./HintText";
 
 interface SkillCheckProps {
-  /** Step id to scroll to and open, from the #/skill-check/<stepId> route. */
+  track: TrackData;
+  /** Step id to scroll to and open, from the /<track>/skill-check/<stepId> route. */
   focusStepId: string | null;
 }
 
@@ -20,14 +26,16 @@ function drillPasses(drill: CommandDrill, input: string): boolean {
   return drill.requiredPatterns.every((p) => new RegExp(p).test(cmd));
 }
 
-export function SkillCheck({ focusStepId }: SkillCheckProps) {
+export function SkillCheck({ track, focusStepId }: SkillCheckProps) {
   const weeksWithChecks = useMemo(
     () =>
-      WEEKS.map((week) => ({
-        week,
-        steps: week.steps.filter((s) => VALIDATION_MAP[s.id]),
-      })).filter((w) => w.steps.length > 0),
-    [],
+      track.weeks
+        .map((week) => ({
+          week,
+          steps: week.steps.filter((s) => track.validationMap[s.id]),
+        }))
+        .filter((w) => w.steps.length > 0),
+    [track],
   );
 
   const focusWeekId = focusStepId
@@ -38,7 +46,7 @@ export function SkillCheck({ focusStepId }: SkillCheckProps) {
     <div className="pt-8">
       <section className="cartoon-card p-5 sm:p-6">
         <h2 className="font-display text-2xl font-extrabold sm:text-3xl">
-          🧪 Skill checks — validate before you tick
+          🧪 {track.name} skill checks — validate before you tick
         </h2>
         <p className="mt-2 text-sm font-semibold text-slate-600 dark:text-slate-300 sm:text-base">
           Each main step of the plan has a short quiz, and many have command
@@ -47,8 +55,8 @@ export function SkillCheck({ focusStepId }: SkillCheckProps) {
           off in the plan.
         </p>
         <p className="mt-3 rounded-xl border-2 border-dashed border-amber-400 bg-amber-50 p-3 text-xs font-semibold leading-relaxed text-slate-700 dark:border-amber-500/50 dark:bg-amber-500/10 dark:text-slate-200">
-          ⚠️ Heads-up: the real CKA exam is <strong>not</strong> multiple
-          choice — it is 100% hands-on tasks in live clusters. These quizzes
+          ⚠️ Heads-up: the real {track.name} exam is <strong>not</strong>{" "}
+          multiple choice — it is 100% hands-on tasks in live clusters. These quizzes
           only validate knowledge; they are no substitute for practising on a
           real cluster. Command drills are checked locally against expected
           patterns. Results are not saved — retake any check, any time.
@@ -59,6 +67,7 @@ export function SkillCheck({ focusStepId }: SkillCheckProps) {
         {weeksWithChecks.map(({ week, steps }) => (
           <WeekChecksCard
             key={week.id}
+            track={track}
             week={week}
             steps={steps}
             defaultOpen={focusWeekId ? week.id === focusWeekId : false}
@@ -71,11 +80,13 @@ export function SkillCheck({ focusStepId }: SkillCheckProps) {
 }
 
 function WeekChecksCard({
+  track,
   week,
   steps,
   defaultOpen,
   focusStepId,
 }: {
+  track: TrackData;
   week: Week;
   steps: Step[];
   defaultOpen: boolean;
@@ -90,13 +101,13 @@ function WeekChecksCard({
     // the Skill Check tab was visited before.
     if (containsFocus) setOpen(true);
   }, [containsFocus, focusStepId]);
-  const domain = DOMAIN_MAP[week.domain];
+  const domain = track.domainMap[week.domain];
   const questionCount = steps.reduce(
-    (n, s) => n + (VALIDATION_MAP[s.id]?.questions.length ?? 0),
+    (n, s) => n + (track.validationMap[s.id]?.questions.length ?? 0),
     0,
   );
   const drillCount = steps.reduce(
-    (n, s) => n + (VALIDATION_MAP[s.id]?.drills?.length ?? 0),
+    (n, s) => n + (track.validationMap[s.id]?.drills?.length ?? 0),
     0,
   );
 
@@ -148,7 +159,7 @@ function WeekChecksCard({
             <StepCheck
               key={step.id}
               step={step}
-              validation={VALIDATION_MAP[step.id]}
+              validation={track.validationMap[step.id]}
               highlighted={step.id === focusStepId}
             />
           ))}

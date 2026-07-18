@@ -9,6 +9,13 @@ service cloud.firestore {
       allow read, write: if request.auth != null && request.auth.uid == uid;
     }
 
+    // Kubetopia (the game at play.kubequest.org) keeps its save-games in a
+    // separate collection so it can never collide with study-plan data.
+    // Same rule: each player owns exactly their own document.
+    match /kubetopia/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
     // Anonymous aggregate counter: "N people are studying this plan".
     // - Anyone (including signed-out visitors) can read the count.
     // - A signed-in user may only ever increment it by exactly 1

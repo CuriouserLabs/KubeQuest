@@ -78,7 +78,7 @@ export function KubetopiaShowcase() {
                 🎮 Play Kubetopia — save the city
               </a>
               <span className="text-xs font-bold text-kube-100">
-                Free · no sign-in needed · same Google account as KubeQuest
+                Free · same Google account as KubeQuest
               </span>
             </div>
           </div>

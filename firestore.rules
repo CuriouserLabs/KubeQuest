@@ -16,6 +16,29 @@ service cloud.firestore {
       allow read, write: if request.auth != null && request.auth.uid == uid;
     }
 
+    // Kubetopia campaign run history: private to its owner. Runs are
+    // append-only from the client (nobody can edit or read anyone else's).
+    match /kubetopia_campaign_runs/{uid}/runs/{runId} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow create: if request.auth != null && request.auth.uid == uid;
+      allow update, delete: if false;
+    }
+
+    // Kubetopia campaign leaderboards: world-readable (signed in or not).
+    // Each player may write ONLY their own entry, and the entry's uid must
+    // match them. Campaign scores are client-attested for now; competitive
+    // modes will move to an API-only verified write path later.
+    match /kubetopia_leaderboards/{boardId}/entries/{uid} {
+      allow read: if true;
+      allow write: if request.auth != null
+                   && request.auth.uid == uid
+                   && request.resource.data.uid == uid;
+    }
+    match /kubetopia_leaderboards/{boardId} {
+      allow read: if true;
+      allow write: if false; // board metadata is not client-managed
+    }
+
     // Anonymous aggregate counter: "N people are studying this plan".
     // - Anyone (including signed-out visitors) can read the count.
     // - A signed-in user may only ever increment it by exactly 1

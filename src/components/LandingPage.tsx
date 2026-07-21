@@ -2,6 +2,7 @@ import { TRACKS } from "../data/tracks";
 import type { TrackData } from "../types";
 import { navigateTo } from "../utils/routing";
 import { overallCounts, percent, type CompletedSet } from "../utils/progress";
+import { KubetopiaShowcase } from "./KubetopiaShowcase";
 
 interface LandingPageProps {
   completed: CompletedSet;
@@ -56,6 +57,9 @@ export function LandingPage({ completed, signedIn, studierCount }: LandingPagePr
           ))}
         </div>
       </section>
+
+      {/* Flagship product: the Kubetopia game */}
+      <KubetopiaShowcase />
 
       {/* What you get */}
       <section aria-labelledby="features-heading" className="mt-10">

@@ -118,6 +118,14 @@ firebase login
 # one-time: point this directory at your project (creates .firebaserc)
 firebase use --add   # select your project, alias e.g. "default"
 
+# one-time, new projects only: Firebase projects created on or after
+# 15 Oct 2026 no longer get a default Hosting site, so the first deploy
+# fails with "404 Site Not Found" until one exists. Check with
+# `firebase hosting:sites:list`; if it's empty, create one (the project ID
+# usually works as the site ID; if it's taken, pick another and add it as
+# "site" under "hosting" in firebase.json):
+firebase hosting:sites:create <project-id>
+
 # build and deploy hosting + security rules
 npm run build
 firebase deploy --only hosting,firestore:rules
